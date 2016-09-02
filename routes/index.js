@@ -1,11 +1,6 @@
 const express = require('express');
+const moment = require('moment');
 const router = express.Router();
-
-/* GET home page. */
-
-const isDate = (date) => {
-    return ( (new Date(date) !== "Invalid Date" && !isNaN(new Date(date)) ));
-};
 
 router.get('/', (req, res) =>{
     var fullUrl = req.get('host') + req.originalUrl;
@@ -14,12 +9,14 @@ router.get('/', (req, res) =>{
 
 router.get('/:date', (req, res) =>{
     let date = req.params.date
+    console.log(moment(date, 'MMM D,YYYY', true).isValid())
 
-    console.log(isDate(date))
-    if (isDate(date) === true) {
-        date = new Date(date);
-          res.end(`"unix:" ${(date.getTime()/1000).toFixed(0)} "natural" ${date}`);
-    } else {
+    if (isNaN(date) && moment(date, 'MMM D,YYYY').isValid() ) {
+         res.end(`{"unix:" ${moment(date).format('X')}, "natural" ${moment(date).format('MMMM DD,YYYY')}}`);
+    } else if ( !isNaN(date) ) {
+
+           res.end(`{"unix:" ${date}, "natural" ${moment(date).format('MMMM DD,YYYY')}}`);
+    }  else {
 
         res.end('')
     }
